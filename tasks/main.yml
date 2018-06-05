@@ -1,0 +1,40 @@
+---
+- name: Enable the traffic forwarding
+  lineinfile:
+    path: /etc/sysctl.conf
+    line: net.ipv4.ip_forward = 1
+
+- name: Deploy iptables configuration
+  template:
+    src: iptables-config.j2
+    dest: /etc/sysconfig/iptables-config
+  become: yes
+
+- name: Create the NAT rule
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: eth0
+    jump: MASQUERADE
+    comment: Masquarade the outgoing traffic
+  become: yes
+
+- name: Allow established connections from the public interface
+  iptables:
+    chain: FORWARD
+    in_interface: eth0
+    out_interface: eth1
+    match: state
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+    comment: Allow established connections from the public interface
+  become: yes
+
+- name: Allow outgoing traffic
+  iptables:
+    chain: FORWARD
+    in_interface: eth1
+    out_interface: eth0
+    jump: ACCEPT
+    comment: Allow outgoing traffic
+  become: yes
