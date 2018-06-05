@@ -17,7 +17,7 @@
   iptables:
     table: nat
     chain: POSTROUTING
-    out_interface: eth0
+    out_interface: "{{ public_interface }}"
     jump: MASQUERADE
     comment: Masquarade the outgoing traffic
   become: yes
@@ -25,8 +25,8 @@
 - name: Allow established connections from the public interface
   iptables:
     chain: FORWARD
-    in_interface: eth0
-    out_interface: eth1
+    in_interface: "{{ public_interface }}"
+    out_interface: "{{ private_interface }}"
     match: state
     ctstate: ESTABLISHED,RELATED
     jump: ACCEPT
@@ -36,8 +36,8 @@
 - name: Allow outgoing traffic
   iptables:
     chain: FORWARD
-    in_interface: eth1
-    out_interface: eth0
+    in_interface: "{{ private_interface }}"
+    out_interface: "{{ public_interface }}"
     jump: ACCEPT
     comment: Allow outgoing traffic
   become: yes

@@ -1,2 +1,3 @@
 ---
-# defaults file for router
+public_interface: eth0
+private_interface: eth1
