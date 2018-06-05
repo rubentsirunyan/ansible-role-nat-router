@@ -1,31 +1,33 @@
-Role Name
+Ansible Role: nat_router
 =========
 
-A brief description of the role goes here.
+This role sets up a simple NAT router on a Linux machine that can act as a default gateway for the local network to the Internet.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+None.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+`public_interface`: The name of the network interface that faces to the public network (Internet). The default value is `eth0` 
+`private_interface`: The name of the network interface that faces to the local/private network. The default value is `eth1` 
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
+    - hosts: linux_routers
       roles:
-         - { role: username.rolename, x: 42 }
+        - role: rubentsirunyan.nat_router
+          vars:
+            - public_interface: enp0s3
+            - private_interface: eth0
 
 License
 -------
@@ -35,4 +37,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This role is created by Ruben Tsirunyan https://github.com/rubentsirunyan
