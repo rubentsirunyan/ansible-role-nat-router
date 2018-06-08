@@ -10,14 +10,9 @@ galaxy_info:
   github_branch: master
 
   platforms:
-  - name: CentOS
+  - name: EL
     versions:
-    - 7
-  - name: Fedora
-    versions:
-    - 25
-  - name: RHEL
-    versions:
+    - 6
     - 7
 
   galaxy_tags:
