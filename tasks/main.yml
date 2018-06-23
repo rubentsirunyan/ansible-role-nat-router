@@ -1,4 +1,10 @@
 ---
+- name: Install iptables service
+  yum:
+    name: iptables-services
+    state: installed
+  become: yes
+
 - name: Enable the traffic forwarding
   sysctl: 
     name: net.ipv4.ip_forward
@@ -13,6 +19,19 @@
     dest: /etc/sysconfig/iptables-config
   become: yes
 
+- name: Enable and start iptables
+  service:
+    name: iptables
+    state: started
+    enabled: true
+  become: true
+
+- name: Flush the existing rules
+  iptables:
+    flush: true
+  become: yes
+  notify: restart iptables
+
 - name: Create the NAT rule
   iptables:
     table: nat
@@ -21,6 +40,7 @@
     jump: MASQUERADE
     comment: Masquarade the outgoing traffic
   become: yes
+  notify: restart iptables
 
 - name: Allow established connections from the public interface
   iptables:
@@ -32,6 +52,7 @@
     jump: ACCEPT
     comment: Allow established connections from the public interface
   become: yes
+  notify: restart iptables
 
 - name: Allow outgoing traffic
   iptables:
@@ -41,3 +62,5 @@
     jump: ACCEPT
     comment: Allow outgoing traffic
   become: yes
+  notify: restart iptables
+
