@@ -1,0 +1,40 @@
+---
+- name: Ensure that firewalld is installed
+  package:
+    name: firewalld
+    state: present
+  become: true
+
+- name: Ensure that firewalld is started and enabled
+  service:
+    name: firewalld
+    state: running
+    enabled: true
+  become: true
+
+- name: Set up the internal zone
+  firewalld:
+    zone: internal
+    interface: "{{ private_interface }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  become: true
+
+- name: Set up the external zone
+  firewalld:
+    zone: external
+    interface: "{{ public_interface }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  become: true
+
+- name: Masquerade the outgoing traffic
+  firewalld:
+    masquerade: yes
+    state: enabled
+    permanent: true
+    immediate: true
+    zone: external
+
