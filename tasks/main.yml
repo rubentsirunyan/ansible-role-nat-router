@@ -1,9 +1,4 @@
 ---
-- name: Install iptables service
-  yum:
-    name: iptables-services
-    state: installed
-  become: yes
 
 - name: Enable the traffic forwarding
   sysctl: 
@@ -13,54 +8,11 @@
     reload: yes
   become: yes
 
-- name: Deploy iptables configuration
-  template:
-    src: iptables-config.j2
-    dest: /etc/sysconfig/iptables-config
-  become: yes
+- name: Set up firewalld
+  include_task: firewalld.yml
+  when: use_firewall == firewalld
 
-- name: Enable and start iptables
-  service:
-    name: iptables
-    state: started
-    enabled: true
-  become: true
-
-- name: Flush the existing rules
-  iptables:
-    flush: true
-  become: yes
-  notify: restart iptables
-
-- name: Create the NAT rule
-  iptables:
-    table: nat
-    chain: POSTROUTING
-    out_interface: "{{ public_interface }}"
-    jump: MASQUERADE
-    comment: Masquarade the outgoing traffic
-  become: yes
-  notify: restart iptables
-
-- name: Allow established connections from the public interface
-  iptables:
-    chain: FORWARD
-    in_interface: "{{ public_interface }}"
-    out_interface: "{{ private_interface }}"
-    match: state
-    ctstate: ESTABLISHED,RELATED
-    jump: ACCEPT
-    comment: Allow established connections from the public interface
-  become: yes
-  notify: restart iptables
-
-- name: Allow outgoing traffic
-  iptables:
-    chain: FORWARD
-    in_interface: "{{ private_interface }}"
-    out_interface: "{{ public_interface }}"
-    jump: ACCEPT
-    comment: Allow outgoing traffic
-  become: yes
-  notify: restart iptables
+- name: Set up iptables
+  include_task: iptables.yml
+  when: use_firewall == iptables
 
