@@ -9,10 +9,10 @@
   become: yes
 
 - name: Set up firewalld
-  include_task: firewalld.yml
-  when: use_firewall == firewalld
+  include_tasks: firewalld.yml
+  when: use_firewall == 'firewalld'
 
 - name: Set up iptables
-  include_task: iptables.yml
-  when: use_firewall == iptables
+  include_tasks: iptables.yml
+  when: use_firewall == 'iptables'
 
